@@ -1,45 +1,433 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>gr1ff3n.com</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    :root {
+      --bg: #020617;
+      --card-bg: rgba(15, 23, 42, 0.92);
+      --accent: #22d3ee;
+      --accent-soft: rgba(56, 189, 248, 0.18);
+      --accent-strong: #38bdf8;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(148, 163, 184, 0.35);
+      --chip-bg: rgba(15, 23, 42, 0.9);
+      --shadow-strong: 0 30px 100px rgba(0, 0, 0, 0.8);
+      --shadow-soft: 0 0 80px rgba(56, 189, 248, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      background: #050816;
-      color: #e5e7eb;
+      margin: 0;
+      min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.12), transparent 55%),
+        var(--bg);
+      color: var(--text-main);
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      margin: 0;
+      padding: 1.5rem;
     }
+
+    .orbit {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(40px);
+      opacity: 0.5;
+      animation: float 18s ease-in-out infinite;
+      mix-blend-mode: screen;
+    }
+
+    .blob:nth-child(1) {
+      width: 380px;
+      height: 380px;
+      background: rgba(56, 189, 248, 0.45);
+      top: -80px;
+      left: -80px;
+    }
+
+    .blob:nth-child(2) {
+      width: 320px;
+      height: 320px;
+      background: rgba(129, 140, 248, 0.5);
+      bottom: -60px;
+      right: -40px;
+      animation-delay: -6s;
+    }
+
+    .blob:nth-child(3) {
+      width: 260px;
+      height: 260px;
+      background: rgba(52, 211, 153, 0.4);
+      top: 50%;
+      left: 60%;
+      transform: translate(-50%, -50%);
+      animation-delay: -12s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(40px, -30px, 0) scale(1.05);
+      }
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 720px;
+    }
+
     .card {
-      text-align: center;
-      padding: 2rem 3rem;
-      border-radius: 1rem;
-      background: rgba(15, 23, 42, 0.9);
-      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      position: relative;
+      padding: 2.5rem 2.5rem 2.75rem;
+      border-radius: 1.5rem;
+      background: linear-gradient(
+          135deg,
+          rgba(15, 23, 42, 0.96),
+          rgba(15, 23, 42, 0.92)
+        );
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-strong), var(--shadow-soft);
+      backdrop-filter: blur(16px);
+      overflow: hidden;
     }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      background: conic-gradient(
+        from 180deg,
+        rgba(56, 189, 248, 0.2),
+        rgba(59, 130, 246, 0.15),
+        rgba(236, 72, 153, 0.2),
+        rgba(56, 189, 248, 0.2)
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .logo-orb {
+      width: 3.25rem;
+      height: 3.25rem;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 20%, #f9fafb, #38bdf8);
+      color: #020617;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: 0.08em;
+      box-shadow:
+        0 10px 40px rgba(56, 189, 248, 0.65),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      text-transform: uppercase;
+    }
+
+    .meta-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .meta-eyebrow {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent-strong);
+      opacity: 0.9;
+    }
+
+    .meta-sub {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+
     h1 {
-      font-size: 2rem;
-      margin-bottom: .25rem;
+      font-size: clamp(2.1rem, 3vw, 2.6rem);
+      margin: 0 0 0.6rem;
+      letter-spacing: 0.04em;
+      text-transform: lowercase;
     }
-    p {
-      margin: .25rem 0;
-      color: #9ca3af;
-    }
+
     .tagline {
-      margin-top: .75rem;
-      font-style: italic;
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    .highlight {
+      margin-top: 1rem;
+      font-size: 0.98rem;
+      line-height: 1.6;
+      color: #d1d5db;
+    }
+
+    .highlight span {
+      color: var(--accent-strong);
+      font-weight: 500;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 1.4rem 0 1.6rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.4), transparent 55%),
+                  var(--chip-bg);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      color: #e5e7eb;
+      white-space: nowrap;
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.9);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.6rem 1.3rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, border-color 0.12s ease-out, background 0.12s ease-out;
+    }
+
+    .btn-primary {
+      background: radial-gradient(circle at 10% 0, rgba(248, 250, 252, 0.9), rgba(56, 189, 248, 0.95));
+      color: #020617;
+      border-color: rgba(56, 189, 248, 0.9);
+      box-shadow: 0 12px 40px rgba(56, 189, 248, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.85);
+      color: var(--text-main);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+      border-color: rgba(148, 163, 184, 0.95);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 18px 55px rgba(56, 189, 248, 0.55);
+    }
+
+    .btn span.icon {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .statusline {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      opacity: 0.95;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 14px rgba(34, 197, 94, 0.9);
+    }
+
+    .status-label {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.72rem;
+      color: #a5b4fc;
+    }
+
+    .statusline code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.78rem;
+      padding: 0.16rem 0.45rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: #e5e7eb;
+    }
+
+    .footer-note {
+      margin-top: 1rem;
+      text-align: right;
+      font-size: 0.74rem;
+      color: rgba(148, 163, 184, 0.8);
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 1.75rem 1.35rem 2rem;
+        border-radius: 1.1rem;
+      }
+
+      .meta {
+        align-items: flex-start;
+      }
+
+      .actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .footer-note {
+        text-align: left;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>gr1ff3n.com</h1>
-    <p>Homelab. Experiments. Chaos (but the good kind).</p>
-    <p class="tagline">Full stack: coming soon…</p>
+  <div class="orbit" aria-hidden="true">
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
   </div>
+
+  <main class="shell">
+    <section class="card" aria-label="gr1ff3n.com landing">
+      <header class="meta">
+        <div class="logo-orb">g</div>
+        <div class="meta-text">
+          <div class="meta-eyebrow">gr1ff3n.com</div>
+          <div class="meta-sub">Homelab • Experiments • Controlled chaos</div>
+        </div>
+      </header>
+
+      <h1>Signals from the homelab</h1>
+      <p class="tagline">Bits, packets, and projects radiating out of a very overbuilt lab.</p>
+
+      <p class="highlight">
+        Currently hacking on <span>self-hosted services</span>, <span>network wizardry</span>, and an
+        unhealthy number of <span>side quests</span>. This is the front door.
+      </p>
+
+      <div class="pill-row" aria-label="Focus areas">
+        <div class="pill">
+          <span class="pill-dot"></span>
+          homelab / infra
+        </div>
+        <div class="pill">
+          <span class="pill-dot"></span>
+          networking & wisp
+        </div>
+        <div class="pill">
+          <span class="pill-dot"></span>
+          obsidian brain
+        </div>
+        <div class="pill">
+          <span class="pill-dot"></span>
+          mtg & campaigns
+        </div>
+      </div>
+
+      <div class="actions">
+        <!-- TODO: Point these hrefs to real pages once you build them -->
+        <a href="#lab" class="btn btn-primary">
+          <span class="icon">▶</span>
+          <span>Enter the lab</span>
+        </a>
+        <a href="#notes" class="btn btn-secondary">
+          <span class="icon">⌘</span>
+          <span>Open notes & docs</span>
+        </a>
+      </div>
+
+      <div class="statusline">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span class="status-label">Status</span>
+        <span>Online · scaffolding in progress</span>
+        <code>v0.1.0&nbsp;/&nbsp;landing-only</code>
+      </div>
+
+      <div class="footer-note">
+        Future routes: <code>/lab</code> · <code>/status</code> · <code>/projects</code>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
