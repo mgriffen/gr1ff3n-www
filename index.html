@@ -2,432 +2,882 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>gr1ff3n.com</title>
+  <title>gr1ff3n.com · Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
       --bg: #020617;
-      --card-bg: rgba(15, 23, 42, 0.92);
+      --bg-alt: #020617;
+      --panel: #020617;
+      --card-bg: rgba(15, 23, 42, 0.96);
+      --card-bg-hover: rgba(30, 64, 175, 0.4);
       --accent: #22d3ee;
       --accent-soft: rgba(56, 189, 248, 0.18);
       --accent-strong: #38bdf8;
       --text-main: #e5e7eb;
       --text-muted: #9ca3af;
       --border-subtle: rgba(148, 163, 184, 0.35);
-      --chip-bg: rgba(15, 23, 42, 0.9);
-      --shadow-strong: 0 30px 100px rgba(0, 0, 0, 0.8);
-      --shadow-soft: 0 0 80px rgba(56, 189, 248, 0.25);
+      --danger: #f97373;
+      --success: #22c55e;
+      --warning: #facc15;
+      --radius-lg: 16px;
+      --radius-sm: 999px;
+      --shadow-soft: 0 22px 45px rgba(15, 23, 42, 0.8);
     }
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
       min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%),
-        radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.12), transparent 55%),
+        radial-gradient(circle at top, rgba(56, 189, 248, 0.16), transparent 55%),
+        radial-gradient(circle at bottom, rgba(59, 130, 246, 0.12), transparent 55%),
         var(--bg);
       color: var(--text-main);
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: center;
       padding: 1.5rem;
     }
 
-    .orbit {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 0;
-    }
-
-    .blob {
-      position: absolute;
-      border-radius: 999px;
-      filter: blur(40px);
-      opacity: 0.5;
-      animation: float 18s ease-in-out infinite;
-      mix-blend-mode: screen;
-    }
-
-    .blob:nth-child(1) {
-      width: 380px;
-      height: 380px;
-      background: rgba(56, 189, 248, 0.45);
-      top: -80px;
-      left: -80px;
-    }
-
-    .blob:nth-child(2) {
-      width: 320px;
-      height: 320px;
-      background: rgba(129, 140, 248, 0.5);
-      bottom: -60px;
-      right: -40px;
-      animation-delay: -6s;
-    }
-
-    .blob:nth-child(3) {
-      width: 260px;
-      height: 260px;
-      background: rgba(52, 211, 153, 0.4);
-      top: 50%;
-      left: 60%;
-      transform: translate(-50%, -50%);
-      animation-delay: -12s;
-    }
-
-    @keyframes float {
-      0%, 100% {
-        transform: translate3d(0, 0, 0) scale(1);
-      }
-      50% {
-        transform: translate3d(40px, -30px, 0) scale(1.05);
-      }
-    }
-
     .shell {
-      position: relative;
-      z-index: 1;
       width: 100%;
-      max-width: 720px;
-    }
-
-    .card {
-      position: relative;
-      padding: 2.5rem 2.5rem 2.75rem;
-      border-radius: 1.5rem;
-      background: linear-gradient(
-          135deg,
-          rgba(15, 23, 42, 0.96),
-          rgba(15, 23, 42, 0.92)
-        );
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-strong), var(--shadow-soft);
-      backdrop-filter: blur(16px);
+      max-width: 1120px;
+      min-height: 0;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.98));
+      border-radius: 20px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
     }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: -1px;
-      border-radius: inherit;
-      padding: 1px;
-      background: conic-gradient(
-        from 180deg,
-        rgba(56, 189, 248, 0.2),
-        rgba(59, 130, 246, 0.15),
-        rgba(236, 72, 153, 0.2),
-        rgba(56, 189, 248, 0.2)
-      );
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-              mask-composite: exclude;
-      opacity: 0.5;
-      pointer-events: none;
-    }
+    /* Top bar */
 
-    .meta {
+    .topbar {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.75rem;
+      justify-content: space-between;
+      padding: 0.9rem 1.4rem;
+      background: linear-gradient(
+        90deg,
+        rgba(15, 23, 42, 1),
+        rgba(15, 23, 42, 0.9)
+      );
+      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
     }
 
-    .logo-orb {
-      width: 3.25rem;
-      height: 3.25rem;
-      border-radius: 999px;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: radial-gradient(circle at 30% 30%, #22d3ee, #0f172a);
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at 30% 20%, #f9fafb, #38bdf8);
-      color: #020617;
       font-weight: 800;
-      font-size: 1.35rem;
-      letter-spacing: 0.08em;
-      box-shadow:
-        0 10px 40px rgba(56, 189, 248, 0.65),
-        0 0 0 1px rgba(15, 23, 42, 0.9);
-      text-transform: uppercase;
-    }
-
-    .meta-text {
-      display: flex;
-      flex-direction: column;
-      gap: 0.1rem;
-    }
-
-    .meta-eyebrow {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--accent-strong);
-      opacity: 0.9;
-    }
-
-    .meta-sub {
-      font-size: 0.86rem;
-      color: var(--text-muted);
-    }
-
-    h1 {
-      font-size: clamp(2.1rem, 3vw, 2.6rem);
-      margin: 0 0 0.6rem;
-      letter-spacing: 0.04em;
-      text-transform: lowercase;
-    }
-
-    .tagline {
-      margin: 0;
       font-size: 1rem;
+      letter-spacing: 0.03em;
+      color: #0b1120;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.7);
+    }
+
+    .brand-text-main {
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      font-size: 0.95rem;
+    }
+
+    .brand-text-sub {
+      font-size: 0.78rem;
       color: var(--text-muted);
     }
 
-    .highlight {
-      margin-top: 1rem;
-      font-size: 0.98rem;
-      line-height: 1.6;
-      color: #d1d5db;
-    }
-
-    .highlight span {
-      color: var(--accent-strong);
-      font-weight: 500;
-    }
-
-    .pill-row {
+    .topbar-right {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin: 1.4rem 0 1.6rem;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.74rem;
+      color: var(--text-muted);
     }
 
     .pill {
+      border-radius: 999px;
+      padding: 0.25rem 0.7rem;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(15, 23, 42, 0.85);
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      padding: 0.35rem 0.8rem;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.4), transparent 55%),
-                  var(--chip-bg);
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      color: #e5e7eb;
+      gap: 0.35rem;
       white-space: nowrap;
     }
 
     .pill-dot {
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
       border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 10px rgba(34, 211, 238, 0.9);
+      background: var(--success);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
     }
 
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 1.4rem;
-    }
-
-    .btn {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.45rem;
-      padding: 0.6rem 1.3rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      font-size: 0.9rem;
+    .pill-label {
       font-weight: 500;
-      text-decoration: none;
-      cursor: pointer;
-      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, border-color 0.12s ease-out, background 0.12s ease-out;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.67rem;
     }
 
-    .btn-primary {
-      background: radial-gradient(circle at 10% 0, rgba(248, 250, 252, 0.9), rgba(56, 189, 248, 0.95));
-      color: #020617;
-      border-color: rgba(56, 189, 248, 0.9);
-      box-shadow: 0 12px 40px rgba(56, 189, 248, 0.4);
+    .topbar-meta {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
     }
 
-    .btn-secondary {
-      background: rgba(15, 23, 42, 0.85);
+    .meta-item {
+      display: flex;
+      align-items: baseline;
+      gap: 0.25rem;
+    }
+
+    .meta-label {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.63rem;
+      color: var(--text-muted);
+    }
+
+    .meta-value {
+      font-size: 0.75rem;
       color: var(--text-main);
     }
 
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
-      border-color: rgba(148, 163, 184, 0.95);
+    /* Main */
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 0.9rem 1.4rem 1.2rem;
+      min-height: 0;
+      flex: 1;
     }
 
-    .btn-primary:hover {
-      box-shadow: 0 18px 55px rgba(56, 189, 248, 0.55);
+    .main-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 0.75rem;
     }
 
-    .btn span.icon {
+    .main-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .main-title {
       font-size: 1.1rem;
-      line-height: 1;
-    }
-
-    .statusline {
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      opacity: 0.95;
+      gap: 0.4rem;
     }
 
-    .status-dot {
+    .main-title span.highlight {
+      background: linear-gradient(to right, #22d3ee, #38bdf8);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .main-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      max-width: 420px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      padding: 0.18rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: radial-gradient(
+        circle at top left,
+        rgba(56, 189, 248, 0.12),
+        rgba(15, 23, 42, 0.9)
+      );
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2);
+    }
+
+    .grid-shell {
+      flex: 1;
+      min-height: 0;
+      margin-top: 0.5rem;
+      padding: 0.6rem;
+      border-radius: 16px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.96));
+      border: 1px solid rgba(30, 64, 175, 0.6);
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .grid-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .grid-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .grid-dot {
       width: 8px;
       height: 8px;
       border-radius: 999px;
       background: #22c55e;
-      box-shadow: 0 0 14px rgba(34, 197, 94, 0.9);
+      box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.18);
     }
 
-    .status-label {
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      font-size: 0.72rem;
-      color: #a5b4fc;
+    .grid-header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .statusline code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 0.78rem;
-      padding: 0.16rem 0.45rem;
+    .grid-pill {
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      color: #e5e7eb;
+      padding: 0.18rem 0.6rem;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(15, 23, 42, 0.85);
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+      white-space: nowrap;
     }
 
-    .footer-note {
-      margin-top: 1rem;
-      text-align: right;
-      font-size: 0.74rem;
-      color: rgba(148, 163, 184, 0.8);
+    .grid-pill span.label {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.63rem;
     }
 
-    @media (max-width: 640px) {
-      .card {
-        padding: 1.75rem 1.35rem 2rem;
-        border-radius: 1.1rem;
-      }
+    .grid-pill span.value {
+      font-size: 0.7rem;
+      color: var(--text-main);
+    }
 
-      .meta {
-        align-items: flex-start;
-      }
+    /* Cards grid */
 
-      .actions {
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.7rem;
+      margin-top: 0.25rem;
+    }
+
+    .container-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      padding: 0.75rem 0.8rem 0.7rem;
+      border-radius: 14px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.96));
+      border: 1px solid rgba(37, 99, 235, 0.5);
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.9);
+      overflow: hidden;
+      cursor: pointer;
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease,
+        background 0.18s ease,
+        translate 0.18s ease;
+    }
+
+    .container-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at top left,
+        rgba(56, 189, 248, 0.18),
+        transparent 65%
+      );
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+    }
+
+    .container-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(56, 189, 248, 0.9);
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(30, 64, 175, 0.6));
+      box-shadow: 0 22px 42px rgba(15, 23, 42, 0.95);
+    }
+
+    .container-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.4rem;
+    }
+
+    .card-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .card-name-code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+        Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.82rem;
+    }
+
+    .card-status {
+      font-size: 0.7rem;
+      border-radius: 999px;
+      padding: 0.16rem 0.5rem;
+      border: 1px solid rgba(34, 197, 94, 0.7);
+      background: rgba(22, 163, 74, 0.18);
+      color: #bbf7d0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      white-space: nowrap;
+    }
+
+    .card-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    .card-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      min-height: 2.3em;
+    }
+
+    .card-meta {
+      margin-top: 0.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+
+    .tag {
+      padding: 0.08rem 0.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(15, 23, 42, 0.9);
+      font-size: 0.68rem;
+      white-space: nowrap;
+    }
+
+    .card-footer-meta {
+      opacity: 0.9;
+    }
+
+    .card-chevron {
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    .card-bottom-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 0.2rem;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .card-bottom-left {
+      display: flex;
+      gap: 0.45rem;
+      align-items: center;
+    }
+
+    .tiny-pill {
+      padding: 0.08rem 0.35rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      font-size: 0.63rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .tiny-pill.accent {
+      border-color: rgba(56, 189, 248, 0.8);
+      color: #e0f2fe;
+    }
+
+    footer {
+      padding: 0.4rem 1.4rem 0.7rem;
+      border-top: 1px solid rgba(15, 23, 42, 0.9);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      background: radial-gradient(circle at bottom, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 1));
+    }
+
+    footer a {
+      color: var(--accent-strong);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
+      body {
+        padding: 0.9rem;
+      }
+      .shell {
+        border-radius: 16px;
+      }
+      .topbar {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-start;
+        gap: 0.5rem;
       }
-
-      .btn {
+      .topbar-right {
         width: 100%;
-        justify-content: center;
+        justify-content: space-between;
       }
-
-      .footer-note {
-        text-align: left;
+      .main {
+        padding: 0.8rem 1rem 1.1rem;
       }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.001ms !important;
-        scroll-behavior: auto !important;
+    @media (max-width: 480px) {
+      body {
+        padding: 0.6rem;
+      }
+      .shell {
+        border-radius: 12px;
+      }
+      .grid-shell {
+        padding: 0.5rem;
+      }
+      .container-card {
+        padding: 0.7rem 0.7rem 0.65rem;
+      }
+      .main-title {
+        font-size: 1rem;
+      }
+      .main-subtitle {
+        font-size: 0.78rem;
       }
     }
   </style>
 </head>
 <body>
-  <div class="orbit" aria-hidden="true">
-    <div class="blob"></div>
-    <div class="blob"></div>
-    <div class="blob"></div>
+  <div class="shell">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">G</div>
+        <div>
+          <div class="brand-text-main">gr1ff3n / home</div>
+          <div class="brand-text-sub">personal stack · homelab · notes</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="pill">
+          <span class="pill-dot"></span>
+          <span class="pill-label">Dashboard Online</span>
+        </div>
+        <div class="topbar-meta">
+          <div class="meta-item">
+            <span class="meta-label">Mode</span>
+            <span class="meta-value">Read-Only</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Theme</span>
+            <span class="meta-value">Dark · Portainer-ish</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="main-header">
+        <div class="main-title-block">
+          <h1 class="main-title">
+            <span>Container</span>
+            <span class="highlight">Overview</span>
+          </h1>
+          <p class="main-subtitle">
+            Click a “container” to jump into a part of my world: homelab,
+            docs, projects, and whatever stack I’m currently breaking for fun.
+          </p>
+        </div>
+        <div class="badge-row">
+          <div class="badge">
+            <span class="badge-dot"></span>
+            <span>Self-hosted brain</span>
+          </div>
+          <div class="badge">
+            <span>Git-backed Obsidian vault</span>
+          </div>
+        </div>
+      </div>
+
+      <section class="grid-shell">
+        <div class="grid-header">
+          <div class="grid-header-left">
+            <div class="grid-dot"></div>
+            <span>Containers · personal stack</span>
+          </div>
+          <div class="grid-header-right">
+            <div class="grid-pill">
+              <span class="label">Total</span>
+              <span class="value">8 containers</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <!-- Container: Homelab -->
+          <a class="container-card" href="#homelab">
+            <div class="card-header">
+              <div class="card-name">
+                <span class="card-name-code">gr1ff3n_homelab</span>
+              </div>
+              <div class="card-status">
+                <span class="card-status-dot"></span>
+                <span>running</span>
+              </div>
+            </div>
+            <p class="card-desc">
+              Dual-Xeon lab, Proxmox, containers, services, experiments.
+              Hardware notes, topology maps, and future chaos.
+            </p>
+            <div class="card-meta">
+              <div class="card-tags">
+                <span class="tag">proxmox</span>
+                <span class="tag">k8s / docker</span>
+                <span class="tag">infra</span>
+              </div>
+              <span class="card-chevron">›</span>
+            </div>
+            <div class="card-bottom-row">
+              <div class="card-bottom-left">
+                <span class="tiny-pill accent">details</span>
+                <span>server build · rack plans</span>
+              </div>
+              <span class="card-footer-meta">/homelab</span>
+            </div>
+          </a>
+
+          <!-- Container: Obsidian Vault -->
+          <a class="container-card" href="#vault">
+            <div class="card-header">
+              <div class="card-name">
+                <span class="card-name-code">obsidian_vault</span>
+              </div>
+              <div class="card-status">
+                <span class="card-status-dot"></span>
+                <span>mounted</span>
+              </div>
+            </div>
+            <p class="card-desc">
+              Notes, systems, prompts, and docs that glue everything together.
+              PKM experiments, workflows, and meta.
+            </p>
+            <div class="card-meta">
+              <div class="card-tags">
+                <span class="tag">notes</span>
+                <span class="tag">pkm</span>
+                <span class="tag">git-sync</span>
+              </div>
+              <span class="card-chevron">›</span>
+            </div>
+            <div class="card-bottom-row">
+              <div class="card-bottom-left">
+                <span class="tiny-pill accent">docs</span>
+                <span>structure · templates</span>
+              </div>
+              <span class="card-footer-meta">/vault</span>
+            </div>
+          </a>
+
+          <!-- Container: MCN / Work -->
+          <a class="container-card" href="#mcn">
+            <div class="card-header">
+              <div class="card-name">
+                <span class="card-name-code">mcn_ops</span>
+              </div>
+              <div class="card-status">
+                <span class="card-status-dot"></span>
+                <span>live</span>
+              </div>
+            </div>
+            <p class="card-desc">
+              ISP adventures: Open Air, fiber, radios, policy, docs, and
+              projects on the Mendocino coast.
+            </p>
+            <div class="card-meta">
+              <div class="card-tags">
+                <span class="tag">networking</span>
+                <span class="tag">wisp</span>
+                <span class="tag">policy</span>
+              </div>
+              <span class="card-chevron">›</span>
+            </div>
+            <div class="card-bottom-row">
+              <div class="card-bottom-left">
+                <span class="tiny-pill accent">work</span>
+                <span>projects · notes</span>
+              </div>
+              <span class="card-footer-meta">/mcn</span>
+            </div>
+          </a>
+
+          <!-- Container: Gaming Rig -->
+          <a class="container-card" href="#gaming">
+            <div class="card-header">
+              <div class="card-name">
+                <span class="card-name-code">gaming_rig</span>
+              </div>
+              <div class="card-status">
+                <span class="card-status-dot"></span>
+                <span>turbo</span>
+              </div>
+            </div>
+            <p class="card-desc">
+              Specs, tuning, thermals, and benchmarks. Where frames are
+              hoarded and BIOS screenshots become documentation.
+            </p>
+            <div class="card-meta">
+              <div class="card-tags">
+                <span class="tag">pc-build</span>
+                <span class="tag">hw-tuning</span>
+                <span class="tag">windows</span>
+              </div>
+              <span class="card-chevron">›</span>
+            </div>
+            <div class="card-bottom-row">
+              <div class="card-bottom-left">
+                <span class="tiny-pill accent">build</span>
+                <span>parts list · layout</span>
+              </div>
+              <span class="card-footer-meta">/gaming</span>
+            </div>
+          </a>
+
+          <!-- Container: Magic / Games -->
+          <a class="container-card" href="#mtg">
+            <div class="card-header">
+              <div class="card-name">
+                <span class="card-name-code">mtg_commander</span>
+              </div>
+              <div class="card-status">
+                <span class="card-status-dot"></span>
+                <span>brewing</span>
+              </div>
+            </div>
+            <p class="card-desc">
+              Commander decks, brew logs, and cardboard chaos. Lists,
+              upgrades, and the occasional cursed idea.
+            </p>
+            <div class="card-meta">
+              <div class="card-tags">
+                <span class="tag">mtg</span>
+                <span class="tag">commander</span>
+                <span class="tag">decklists</span>
+              </div>
+              <span class="card-chevron">›</span>
+            </div>
+            <div class="card-bottom-row">
+              <div class="card-bottom-left">
+                <span class="tiny-pill accent">decks</span>
+                <span>lists · notes</span>
+              </div>
+              <span class="card-footer-meta">/mtg</span>
+            </div>
+          </a>
+
+          <!-- Container: Writing / Worldbuilding -->
+          <a class="container-card" href="#writing">
+            <div class="card-header">
+              <div class="card-name">
+                <span class="card-name-code">writing_worlds</span>
+              </div>
+              <div class="card-status">
+                <span class="card-status-dot"></span>
+                <span>active</span>
+              </div>
+            </div>
+            <p class="card-desc">
+              Tevathara, campaigns, worldbuilding, and narrative scaffolding.
+              Where lore accidentally becomes a setting bible.
+            </p>
+            <div class="card-meta">
+              <div class="card-tags">
+                <span class="tag">d&amp;d</span>
+                <span class="tag">worldbuilding</span>
+                <span class="tag">notes</span>
+              </div>
+              <span class="card-chevron">›</span>
+            </div>
+            <div class="card-bottom-row">
+              <div class="card-bottom-left">
+                <span class="tiny-pill accent">lore</span>
+                <span>maps · hooks</span>
+              </div>
+              <span class="card-footer-meta">/writing</span>
+            </div>
+          </a>
+
+          <!-- Container: Blog / Logbook -->
+          <a class="container-card" href="#blog">
+            <div class="card-header">
+              <div class="card-name">
+                <span class="card-name-code">logbook</span>
+              </div>
+              <div class="card-status">
+                <span class="card-status-dot"></span>
+                <span>rotating</span>
+              </div>
+            </div>
+            <p class="card-desc">
+              Changelogs, experiments, and occasional brain dumps. Not a
+              polished blog, more like a running container log.
+            </p>
+            <div class="card-meta">
+              <div class="card-tags">
+                <span class="tag">notes</span>
+                <span class="tag">updates</span>
+                <span class="tag">thoughts</span>
+              </div>
+              <span class="card-chevron">›</span>
+            </div>
+            <div class="card-bottom-row">
+              <div class="card-bottom-left">
+                <span class="tiny-pill accent">log</span>
+                <span>entries · changelog</span>
+              </div>
+              <span class="card-footer-meta">/log</span>
+            </div>
+          </a>
+
+          <!-- Container: About / Contact -->
+          <a class="container-card" href="#about">
+            <div class="card-header">
+              <div class="card-name">
+                <span class="card-name-code">about_contact</span>
+              </div>
+              <div class="card-status">
+                <span class="card-status-dot"></span>
+                <span>public</span>
+              </div>
+            </div>
+            <p class="card-desc">
+              Who I am, what I’m up to, and how to get in touch without
+              opening 47 different apps.
+            </p>
+            <div class="card-meta">
+              <div class="card-tags">
+                <span class="tag">about</span>
+                <span class="tag">contact</span>
+                <span class="tag">links</span>
+              </div>
+              <span class="card-chevron">›</span>
+            </div>
+            <div class="card-bottom-row">
+              <div class="card-bottom-left">
+                <span class="tiny-pill accent">profile</span>
+                <span>links · socials</span>
+              </div>
+              <span class="card-footer-meta">/about</span>
+            </div>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>gr1ff3n.com · built like a dashboard, powered by way too many notes.</span>
+      <span>
+        wired via
+        <a href="https://pages.cloudflare.com/" target="_blank" rel="noreferrer">
+          Cloudflare Pages
+        </a>
+        &amp; git-synced vaults
+      </span>
+    </footer>
   </div>
-
-  <main class="shell">
-    <section class="card" aria-label="gr1ff3n.com landing">
-      <header class="meta">
-        <div class="logo-orb">g</div>
-        <div class="meta-text">
-          <div class="meta-eyebrow">gr1ff3n.com</div>
-          <div class="meta-sub">Homelab • Experiments • Controlled chaos</div>
-        </div>
-      </header>
-
-      <h1>Signals from the homelab</h1>
-      <p class="tagline">Bits, packets, and projects radiating out of a very overbuilt lab.</p>
-
-      <p class="highlight">
-        Currently hacking on <span>self-hosted services</span>, <span>network wizardry</span>, and an
-        unhealthy number of <span>side quests</span>. This is the front door.
-      </p>
-
-      <div class="pill-row" aria-label="Focus areas">
-        <div class="pill">
-          <span class="pill-dot"></span>
-          homelab / infra
-        </div>
-        <div class="pill">
-          <span class="pill-dot"></span>
-          networking & wisp
-        </div>
-        <div class="pill">
-          <span class="pill-dot"></span>
-          obsidian brain
-        </div>
-        <div class="pill">
-          <span class="pill-dot"></span>
-          mtg & campaigns
-        </div>
-      </div>
-
-      <div class="actions">
-        <!-- TODO: Point these hrefs to real pages once you build them -->
-        <a href="#lab" class="btn btn-primary">
-          <span class="icon">▶</span>
-          <span>Enter the lab</span>
-        </a>
-        <a href="#notes" class="btn btn-secondary">
-          <span class="icon">⌘</span>
-          <span>Open notes & docs</span>
-        </a>
-      </div>
-
-      <div class="statusline">
-        <span class="status-dot" aria-hidden="true"></span>
-        <span class="status-label">Status</span>
-        <span>Online · scaffolding in progress</span>
-        <code>v0.1.0&nbsp;/&nbsp;landing-only</code>
-      </div>
-
-      <div class="footer-note">
-        Future routes: <code>/lab</code> · <code>/status</code> · <code>/projects</code>
-      </div>
-    </section>
-  </main>
 </body>
 </html>
