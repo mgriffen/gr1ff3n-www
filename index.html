@@ -475,15 +475,50 @@
     .terminal-body {
       font-size: 0.8rem;
       color: var(--text-main);
-      white-space: nowrap;
-      overflow-x: auto;
+      overflow-x: hidden;
+      /* allow wrap for history */
+      white-space: pre-wrap;
       padding-bottom: 0.1rem;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    /* Scrollbar for terminal */
+    .terminal-body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .terminal-body::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 3px;
+    }
+
+    .term-output-line {
+      margin-bottom: 0.2rem;
+      display: block;
+    }
+
+    .term-link {
+      color: var(--neon-cyan);
+      text-decoration: underline;
+      cursor: pointer;
     }
 
     .prompt-line {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       gap: 0.4rem;
+    }
+
+    .term-input {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-family: var(--font-code);
+      font-size: 0.8rem;
+      flex: 1;
+      outline: none;
+      caret-color: var(--neon-green);
     }
 
     .segment-username {
@@ -976,17 +1011,18 @@
               <div class="term-dot"></div>
               <div class="term-dot"></div>
             </div>
-            <div class="terminal-body">
+            <div class="terminal-body" id="terminal-body" onclick="document.getElementById('cli-input').focus()">
+              <div id="terminal-history">
+                <div class="term-output-line">Welcome to Gr1ff3nOS v2.4. Type <span
+                    style="color:var(--neon-yellow)">'help'</span> for existing commands.</div>
+              </div>
               <div class="prompt-line">
                 <span class="segment-username">root</span>
                 <span class="segment-at">@</span>
                 <span class="segment-host">mainframe</span>
-                <span class="segment-path">~/systems/core</span>
-                <span class="segment-git">git:(master)</span>
+                <span class="segment-path">~</span>
                 <span class="segment-symbol">⚡</span>
-                <span class="segment-info">security:&nbsp;<span
-                    id="terminal-containers">bypassed</span>&nbsp;|&nbsp;trace:&nbsp;</span>
-                <span class="segment-ok">active&nbsp;⚠</span>
+                <input type="text" id="cli-input" class="term-input" autocomplete="off" spellcheck="false">
               </div>
             </div>
           </section>
@@ -1421,6 +1457,110 @@
       animateCardMetrics();
       setInterval(animateCardMetrics, 4500);
     })();
+  </script>
+  <script>
+    // --- Terminal Logic ---
+    const termInput = document.getElementById('cli-input');
+    const termHistory = document.getElementById('terminal-history');
+    const termBody = document.getElementById('terminal-body');
+
+    // Mappings of "directory names" to card links
+    const fileSystem = {
+      'homelab': '/homelab',
+      'proxmox': '/homelab#proxmox',
+      'truenas': '/homelab#truenas',
+      'tevathara': '/worlds/tevathara',
+      'obsidian': '/worlds/obsidian',
+      'mtg': '/worlds/mtg',
+      'coastline': '/local/coastline',
+      'mail': '/utils/mail'
+    };
+
+    termInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        const cmdLine = this.value.trim();
+        if (!cmdLine) return;
+
+        // Echo command
+        printOutput(`<span style="opacity:0.7">root@mainframe:~$</span> ${cmdLine}`);
+
+        // Process
+        processCommand(cmdLine);
+
+        // Clear and scroll
+        this.value = '';
+        termBody.scrollTop = termBody.scrollHeight;
+      }
+    });
+
+    function printOutput(html) {
+      const div = document.createElement('div');
+      div.className = 'term-output-line';
+      div.innerHTML = html;
+      termHistory.appendChild(div);
+    }
+
+    function processCommand(raw) {
+      const parts = raw.split(' ');
+      const cmd = parts[0].toLowerCase();
+      const arg = parts[1] ? parts[1].toLowerCase() : null;
+
+      switch (cmd) {
+        case 'help':
+          printOutput(`
+                    <span style="color:var(--neon-cyan)">Available commands:</span><br>
+                    &nbsp; ls / ll &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - List internal directories<br>
+                    &nbsp; cd [dir] &nbsp;&nbsp;&nbsp;&nbsp; - Navigate to directory<br>
+                    &nbsp; clear &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Clear terminal<br>
+                    &nbsp; whoami &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Print current user<br>
+                    &nbsp; sudo [cmd] &nbsp;&nbsp; - Execute with root privileges
+                `);
+          break;
+
+        case 'ls':
+        case 'll':
+          let files = Object.keys(fileSystem).map(k => `<span class="term-link">${k}</span>`).join('&nbsp;&nbsp; ');
+          printOutput(files);
+          break;
+
+        case 'cd':
+          if (!arg) {
+            printOutput("usage: cd [directory]");
+            return;
+          }
+          if (fileSystem[arg]) {
+            printOutput(`Navigating to <span style="color:var(--neon-pink)">${arg}</span>...`);
+            setTimeout(() => {
+              window.location.href = fileSystem[arg];
+            }, 800);
+          } else {
+            printOutput(`cd: no such file or directory: ${arg}`);
+          }
+          break;
+
+        case 'clear':
+          termHistory.innerHTML = '';
+          break;
+
+        case 'whoami':
+          printOutput('root (obviously)');
+          break;
+
+        case 'sudo':
+          printOutput('<span style="color:var(--neon-pink)">ACCESS DENIED:</span> Nice try, script kiddie.');
+          break;
+
+        case 'date':
+          printOutput(new Date().toString());
+          break;
+
+        default:
+          printOutput(`command not found: ${cmd}`);
+      }
+    }
+
+    // Auto-focus input on load
+    window.addEventListener('load', () => termInput.focus());
   </script>
 </body>
 
