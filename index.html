@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>gr1ff3n.com | Homelab Control Center</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      /* Core palette (Dracula-ish + cyber stuff) */
+      --bg: #020617;
+      --bg-alt: #0b1020;
+      --bg-elevated: rgba(15, 23, 42, 0.96);
+      --bg-elevated-soft: rgba(15, 23, 42, 0.85);
+
+      --accent-cyan: #8be9fd;
+      --accent-pink: #ff79c6;
+      --accent-green: #50fa7b;
+      --accent-yellow: #f1fa8c;
+      --accent-purple: #bd93f9;
+      --accent-blue: #7dd3fc;
+
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(148, 163, 184, 0.4);
+
+      --danger: #f97373;
+      --warning: #facc15;
+      --ok: #4ade80;
+
+      --card-radius: 1rem;
+      --transition-fast: 180ms ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text-main);
+      background: radial-gradient(circle at top left, #1f2937 0, #020617 45%, #020617 100%);
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Subtle grid / noise background */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.16;
+      background-image:
+        linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mix-blend-mode: soft-light;
+      z-index: -1;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.5rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+      background: linear-gradient(
+        to right,
+        rgba(15, 23, 42, 0.92),
+        rgba(15, 23, 42, 0.96),
+        rgba(24, 24, 37, 0.98)
+      );
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .site-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+    }
+
+    .site-subtitle {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+    }
+
+    .top-bar-center {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .status-chip {
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px rgba(74, 222, 128, 0.8);
+    }
+
+    .metric-label {
+      color: var(--text-muted);
+    }
+
+    .metric-value {
+      color: var(--accent-blue);
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.8rem;
+    }
+
+    .mode-pill {
+      border-radius: 999px;
+      padding: 0.2rem 0.7rem;
+      border: 1px solid rgba(244, 114, 182, 0.9);
+      color: var(--accent-pink);
+      background: radial-gradient(circle at top left, rgba(244, 114, 182, 0.22), transparent 60%);
+    }
+
+    .user-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .user-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #22d3ee, #4f46e5 45%, #ec4899 90%);
+      box-shadow:
+        0 0 12px rgba(56, 189, 248, 0.55),
+        0 0 24px rgba(244, 114, 182, 0.45);
+    }
+
+    .user-name {
+      color: var(--text-main);
+    }
+
+    .main {
+      flex: 1;
+      padding: 1.4rem clamp(1rem, 4vw, 2.25rem) 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .terminal-panel {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.3), transparent 55%),
+                  linear-gradient(to bottom right, #020617, #020617 40%, #020617 100%);
+      border-radius: 0.9rem;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      padding: 0.7rem 0.9rem 0.85rem;
+      box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.7),
+        0 0 0 1px rgba(15, 23, 42, 0.7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .term-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #f97373;
+    }
+    .term-dot:nth-child(2) {
+      background: #facc15;
+    }
+    .term-dot:nth-child(3) {
+      background: #4ade80;
+    }
+
+    .terminal-body {
+      font-size: 0.8rem;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow-x: auto;
+      padding-bottom: 0.1rem;
+    }
+
+    .prompt-line {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+    }
+
+    .segment-username {
+      color: var(--accent-green);
+    }
+
+    .segment-at {
+      color: var(--text-muted);
+    }
+
+    .segment-host {
+      color: var(--accent-cyan);
+    }
+
+    .segment-path {
+      color: var(--accent-purple);
+    }
+
+    .segment-git {
+      color: var(--accent-pink);
+    }
+
+    .segment-symbol {
+      color: var(--accent-yellow);
+    }
+
+    .segment-info {
+      color: var(--text-muted);
+    }
+
+    .segment-ok {
+      color: var(--accent-green);
+    }
+
+    .dashboard-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 0.2rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .dashboard-title {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .dashboard-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.2rem;
+      margin-top: 0.35rem;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .top-bar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .top-bar-center {
+        display: none;
+      }
+      .main {
+        padding-inline: 1rem;
+      }
+      .dashboard-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 0.9rem 1rem 0.85rem;
+      border-radius: var(--card-radius);
+      text-decoration: none;
+      color: inherit;
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.20), transparent 55%),
+                  linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 18px 35px rgba(0, 0, 0, 0.7),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: attr(data-id);
+      position: absolute;
+      inset: 0.6rem 0.9rem auto auto;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.65rem;
+      color: rgba(148, 163, 184, 0.55);
+    }
+
+    .card:hover,
+    .card:focus-visible {
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.95);
+      box-shadow:
+        0 24px 55px rgba(8, 47, 73, 0.7),
+        0 0 24px rgba(59, 130, 246, 0.7);
+      outline: none;
+      background: radial-gradient(circle at top left, rgba(244, 114, 182, 0.24), transparent 60%),
+                  linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(17, 24, 39, 0.98));
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.7rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: lowercase;
+      color: var(--accent-cyan);
+    }
+
+    .status-pill {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      border-radius: 999px;
+      padding: 0.15rem 0.6rem;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      letter-spacing: 0.08em;
+    }
+
+    .status-pill::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent-green);
+      box-shadow: 0 0 10px rgba(74, 222, 128, 0.9);
+    }
+
+    .status-running {
+      color: var(--accent-green);
+      border-color: rgba(74, 222, 128, 0.9);
+      background: rgba(22, 163, 74, 0.16);
+    }
+
+    .status-online {
+      color: var(--accent-blue);
+      border-color: rgba(56, 189, 248, 0.85);
+      background: rgba(8, 47, 73, 0.55);
+    }
+
+    .status-secure {
+      color: var(--accent-purple);
+      border-color: rgba(147, 51, 234, 0.9);
+      background: rgba(88, 28, 135, 0.4);
+    }
+
+    .status-maint {
+      color: var(--accent-yellow);
+      border-color: rgba(250, 204, 21, 0.9);
+      background: rgba(133, 77, 14, 0.4);
+    }
+
+    .card-body {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+      max-width: 40ch;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .card-tag {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.7rem;
+      border-radius: 999px;
+      padding: 0.05rem 0.45rem;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.9rem;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.7rem;
+      border-top: 1px dashed rgba(75, 85, 99, 0.9);
+      padding-top: 0.5rem;
+    }
+
+    .metric-group {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .metric {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .metric-key {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.62rem;
+      color: var(--text-muted);
+    }
+
+    .metric-val {
+      color: var(--accent-blue);
+    }
+
+    .metric-val[data-kind="status-ok"] {
+      color: var(--accent-green);
+    }
+
+    .metric-val[data-kind="status-warn"] {
+      color: var(--warning);
+    }
+
+    .metric-val[data-kind="status-err"] {
+      color: var(--danger);
+    }
+
+    .metric-secondary {
+      text-align: right;
+      color: var(--text-muted);
+    }
+
+    .metric-secondary span {
+      color: var(--accent-purple);
+    }
+
+    footer {
+      padding: 1rem 1.5rem 1.3rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: center;
+    }
+
+    footer span {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <div class="site-title">gr1ff3n.com</div>
+        <div class="site-subtitle">Homelab Control Center</div>
+      </div>
+
+      <div class="top-bar-center">
+        <div class="status-chip">
+          <span class="status-dot"></span>
+          <span class="metric-label">Cluster</span>
+          <span class="metric-value">healthy</span>
+        </div>
+        <div class="status-chip">
+          <span class="metric-label">Uptime</span>
+          <span class="metric-value" id="cluster-uptime">24d 06h</span>
+        </div>
+        <div class="status-chip">
+          <span class="metric-label">Nodes</span>
+          <span class="metric-value" id="cluster-nodes">3</span>
+        </div>
+        <div class="status-chip">
+          <span class="metric-label">Services</span>
+          <span class="metric-value" id="cluster-services">9</span>
+        </div>
+      </div>
+
+      <div class="top-bar-right">
+        <div class="mode-pill">MODE: OPERATOR</div>
+        <div class="user-pill">
+          <div class="user-avatar"></div>
+          <div class="user-name">griff@homelab</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Terminal-style panel -->
+      <section class="terminal-panel" aria-label="Powerlevel10k-style status">
+        <div class="terminal-header">
+          <div class="term-dot"></div>
+          <div class="term-dot"></div>
+          <div class="term-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div class="prompt-line">
+            <span class="segment-username">griff</span>
+            <span class="segment-at">@</span>
+            <span class="segment-host">homelab</span>
+            <span class="segment-path">~/gr1ff3n.com</span>
+            <span class="segment-git">git:(main)</span>
+            <span class="segment-symbol">⛵</span>
+            <span class="segment-info">containers:&nbsp;<span id="terminal-containers">9</span>&nbsp;|&nbsp;status:&nbsp;</span>
+            <span class="segment-ok">all green&nbsp;✔</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dashboard header -->
+      <section class="dashboard-header">
+        <div class="dashboard-title">Container Dashboard</div>
+        <div class="dashboard-subtitle">Click any running container to jump into that part of the stack.</div>
+      </section>
+
+      <!-- Dashboard grid -->
+      <section class="dashboard-grid" aria-label="Service containers">
+
+        <!-- homelab-core -->
+        <a href="/homelab" class="card" data-id="core-01" data-status="running">
+          <div class="card-header">
+            <div class="card-title">homelab-core</div>
+            <div class="status-pill status-running">running</div>
+          </div>
+          <div class="card-body">
+            Proxmox, TrueNAS, Docker stack, and backbone infra for the entire homelab.
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">proxmox</span>
+            <span class="card-tag">truenas</span>
+            <span class="card-tag">docker</span>
+          </div>
+          <div class="card-footer">
+            <div class="metric-group">
+              <div class="metric">
+                <span class="metric-key">CPU</span>
+                <span class="metric-val" data-metric="cpu">12%</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">RAM</span>
+                <span class="metric-val" data-metric="ram">43%</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">UPTIME</span>
+                <span class="metric-val" data-metric="uptime">18d</span>
+              </div>
+            </div>
+            <div class="metric-secondary">
+              I/O&nbsp;<span data-metric="io">321</span>&nbsp;ops/s
+            </div>
+          </div>
+        </a>
+
+        <!-- Obsidian vault -->
+        <a href="/vault" class="card" data-id="obs-02" data-status="running">
+          <div class="card-header">
+            <div class="card-title">obsidian-vault</div>
+            <div class="status-pill status-running">running</div>
+          </div>
+          <div class="card-body">
+            Second brain: notes, docs, workflows, and life management synced across devices.
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">obsidian</span>
+            <span class="card-tag">pkm</span>
+            <span class="card-tag">git-sync</span>
+          </div>
+          <div class="card-footer">
+            <div class="metric-group">
+              <div class="metric">
+                <span class="metric-key">NOTES</span>
+                <span class="metric-val" data-metric="notes">1342</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">PLUGINS</span>
+                <span class="metric-val" data-metric="plugins">27</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">LATENCY</span>
+                <span class="metric-val" data-metric="latency">8ms</span>
+              </div>
+            </div>
+            <div class="metric-secondary">
+              sync&nbsp;<span data-metric="sync">clean</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- MCN / work -->
+        <a href="/mcn" class="card" data-id="mcn-03" data-status="online">
+          <div class="card-header">
+            <div class="card-title">mcn-ops</div>
+            <div class="status-pill status-online">online</div>
+          </div>
+          <div class="card-body">
+            Mendocino Community Network: ISP operations, documentation, projects, and tooling.
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">isp</span>
+            <span class="card-tag">mcn</span>
+            <span class="card-tag">fixed-wireless</span>
+          </div>
+          <div class="card-footer">
+            <div class="metric-group">
+              <div class="metric">
+                <span class="metric-key">APs</span>
+                <span class="metric-val" data-metric="aps">42</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">SUBS</span>
+                <span class="metric-val" data-metric="subs">812</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">ALERTS</span>
+                <span class="metric-val" data-kind="status-ok" data-metric="alerts">0</span>
+              </div>
+            </div>
+            <div class="metric-secondary">
+              backhaul&nbsp;<span data-metric="backhaul">stable</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Gaming rig -->
+        <a href="/gaming" class="card" data-id="rig-04" data-status="running">
+          <div class="card-header">
+            <div class="card-title">gaming-rig</div>
+            <div class="status-pill status-running">running</div>
+          </div>
+          <div class="card-body">
+            High-end gaming PC: monitoring, tuning, overclocking, and benchmark tracking.
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">gpu</span>
+            <span class="card-tag">benchmarks</span>
+            <span class="card-tag">telemetry</span>
+          </div>
+          <div class="card-footer">
+            <div class="metric-group">
+              <div class="metric">
+                <span class="metric-key">CPU</span>
+                <span class="metric-val" data-metric="cpu">7%</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">GPU</span>
+                <span class="metric-val" data-metric="gpu">14%</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">TEMP</span>
+                <span class="metric-val" data-metric="temp">41°C</span>
+              </div>
+            </div>
+            <div class="metric-secondary">
+              fps&nbsp;<span data-metric="fps">144</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- MTG decks -->
+        <a href="/mtg" class="card" data-id="mtg-05" data-status="running">
+          <div class="card-header">
+            <div class="card-title">mtg-decks</div>
+            <div class="status-pill status-running">running</div>
+          </div>
+          <div class="card-body">
+            Commander decks, collection tracking, brewing ideas, and event notes.
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">commander</span>
+            <span class="card-tag">decklists</span>
+            <span class="card-tag">proxies</span>
+          </div>
+          <div class="card-footer">
+            <div class="metric-group">
+              <div class="metric">
+                <span class="metric-key">DECKS</span>
+                <span class="metric-val" data-metric="decks">9</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">CARDS</span>
+                <span class="metric-val" data-metric="cards">3.8k</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">IN QUEUE</span>
+                <span class="metric-val" data-metric="queue">3</span>
+              </div>
+            </div>
+            <div class="metric-secondary">
+              brew&nbsp;<span data-metric="brew">active</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Tevathara MUD -->
+        <a href="/tevathara" class="card" data-id="mud-06" data-status="online">
+          <div class="card-header">
+            <div class="card-title">tevathara-mud</div>
+            <div class="status-pill status-online">online</div>
+          </div>
+          <div class="card-body">
+            Self-hosted MUD, worldbuilding resources, and lore for Tevathara.
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">mud</span>
+            <span class="card-tag">worldbuilding</span>
+            <span class="card-tag">d&amp;d</span>
+          </div>
+          <div class="card-footer">
+            <div class="metric-group">
+              <div class="metric">
+                <span class="metric-key">PLAYERS</span>
+                <span class="metric-val" data-metric="players">5</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">SHARDS</span>
+                <span class="metric-val" data-metric="shards">2</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">LATENCY</span>
+                <span class="metric-val" data-metric="latency">32ms</span>
+              </div>
+            </div>
+            <div class="metric-secondary">
+              story&nbsp;<span data-metric="story">evolving</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Remote access -->
+        <a href="/remote" class="card" data-id="sec-07" data-status="secure">
+          <div class="card-header">
+            <div class="card-title">remote-access</div>
+            <div class="status-pill status-secure">secure</div>
+          </div>
+          <div class="card-body">
+            Jump host, VPN endpoints, and remote access entry points (links only, no auth here).
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">tailscale</span>
+            <span class="card-tag">vpn</span>
+            <span class="card-tag">ssh</span>
+          </div>
+          <div class="card-footer">
+            <div class="metric-group">
+              <div class="metric">
+                <span class="metric-key">TUNNELS</span>
+                <span class="metric-val" data-metric="tunnels">3</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">ACTIVE</span>
+                <span class="metric-val" data-metric="active">1</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">FAILED</span>
+                <span class="metric-val" data-kind="status-ok" data-metric="failed">0</span>
+              </div>
+            </div>
+            <div class="metric-secondary">
+              auth&nbsp;<span data-metric="auth">external</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Mail / web tools -->
+        <a href="/mail" class="card" data-id="mail-08" data-status="running">
+          <div class="card-header">
+            <div class="card-title">webmail-hub</div>
+            <div class="status-pill status-running">running</div>
+          </div>
+          <div class="card-body">
+            Webmail panel, DNS tools, domains, and other internet-facing utilities.
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">mail</span>
+            <span class="card-tag">dns</span>
+            <span class="card-tag">domains</span>
+          </div>
+          <div class="card-footer">
+            <div class="metric-group">
+              <div class="metric">
+                <span class="metric-key">DOMAINS</span>
+                <span class="metric-val" data-metric="domains">4</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">QUEUED</span>
+                <span class="metric-val" data-metric="queued">0</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">SPAM</span>
+                <span class="metric-val" data-kind="status-warn" data-metric="spam">low</span>
+              </div>
+            </div>
+            <div class="metric-secondary">
+              mx&nbsp;<span data-metric="mx">clean</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Local / weather -->
+        <a href="/local" class="card" data-id="loc-09" data-status="online">
+          <div class="card-header">
+            <div class="card-title">coastline-local</div>
+            <div class="status-pill status-online">online</div>
+          </div>
+          <div class="card-body">
+            Local community projects, events, and (future) coastal weather station dashboard.
+          </div>
+          <div class="card-tags">
+            <span class="card-tag">fort-bragg</span>
+            <span class="card-tag">community</span>
+            <span class="card-tag">weather</span>
+          </div>
+          <div class="card-footer">
+            <div class="metric-group">
+              <div class="metric">
+                <span class="metric-key">LINKS</span>
+                <span class="metric-val" data-metric="links">12</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">TEMP</span>
+                <span class="metric-val" data-metric="temp">56°F</span>
+              </div>
+              <div class="metric">
+                <span class="metric-key">STATUS</span>
+                <span class="metric-val" data-kind="status-ok" data-metric="status">ok</span>
+              </div>
+            </div>
+            <div class="metric-secondary">
+              station&nbsp;<span data-metric="station">planned</span>
+            </div>
+          </div>
+        </a>
+
+      </section>
+    </main>
+
+    <footer>
+      <span>gr1ff3n homelab dashboard • synthetic metrics only, real chaos lives behind the links</span>
+    </footer>
+  </div>
+
+  <script>
+    // Tiny fake-metrics animator so the dashboard feels "alive"
+    (function () {
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function randomPick(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      function animateCardMetrics() {
+        document.querySelectorAll(".card").forEach((card) => {
+          card.querySelectorAll("[data-metric]").forEach((el) => {
+            const key = el.getAttribute("data-metric");
+            let v = el.textContent.trim();
+
+            if (key === "cpu" || key === "ram" || key === "gpu") {
+              const base = randomInt(3, 65);
+              el.textContent = base + "%";
+            } else if (key === "uptime") {
+              const days = randomInt(3, 40);
+              el.textContent = days + "d";
+            } else if (key === "io") {
+              el.textContent = randomInt(120, 680);
+            } else if (key === "latency") {
+              el.textContent = randomInt(5, 40) + "ms";
+            } else if (key === "fps") {
+              el.textContent = randomPick([60, 120, 144, 240]);
+            } else if (key === "notes") {
+              el.textContent = randomInt(900, 1600);
+            } else if (key === "plugins") {
+              el.textContent = randomInt(18, 34);
+            } else if (key === "aps") {
+              el.textContent = randomInt(35, 48);
+            } else if (key === "subs") {
+              el.textContent = randomInt(780, 880);
+            } else if (key === "alerts") {
+              const alertCount = randomPick([0, 0, 0, 1]);
+              el.textContent = alertCount;
+              el.dataset.kind = alertCount === 0 ? "status-ok" : "status-warn";
+            } else if (key === "backhaul") {
+              el.textContent = randomPick(["stable", "nominal", "smooth"]);
+            } else if (key === "sync") {
+              el.textContent = randomPick(["clean", "synced", "up-to-date"]);
+            } else if (key === "brew") {
+              el.textContent = randomPick(["active", "percolating", "queued"]);
+            } else if (key === "players") {
+              el.textContent = randomInt(0, 12);
+            } else if (key === "domains") {
+              el.textContent = randomInt(3, 6);
+            } else if (key === "queued") {
+              el.textContent = randomInt(0, 2);
+            } else if (key === "spam") {
+              el.textContent = randomPick(["low", "low", "medium"]);
+              el.dataset.kind = el.textContent === "medium" ? "status-warn" : "status-ok";
+            } else if (key === "status") {
+              el.textContent = randomPick(["ok", "ok", "ok", "watch"]);
+            } else if (key === "tunnels") {
+              el.textContent = randomInt(2, 4);
+            } else if (key === "active") {
+              el.textContent = randomInt(0, 2);
+            } else if (key === "failed") {
+              const failed = randomPick([0, 0, 1]);
+              el.textContent = failed;
+              el.dataset.kind = failed === 0 ? "status-ok" : "status-err";
+            } else if (key === "auth") {
+              el.textContent = randomPick(["external", "sso", "vpn"]);
+            } else if (key === "station") {
+              el.textContent = randomPick(["planned", "design", "pending"]);
+            } else if (key === "links") {
+              el.textContent = randomInt(8, 18);
+            } else if (key === "cards") {
+              el.textContent = randomInt(2500, 4100);
+            } else if (key === "deck") {
+              el.textContent = randomInt(7, 11);
+            }
+          });
+        });
+
+        // Terminal & top bar counters
+        const containersCount = document.querySelectorAll(".card").length;
+        const tc = document.getElementById("terminal-containers");
+        if (tc) tc.textContent = containersCount;
+
+        const servicesEl = document.getElementById("cluster-services");
+        if (servicesEl) servicesEl.textContent = containersCount;
+
+        const uptimeEl = document.getElementById("cluster-uptime");
+        if (uptimeEl) {
+          const d = randomInt(6, 42);
+          const h = randomInt(0, 23);
+          uptimeEl.textContent = d + "d " + h + "h";
+        }
+      }
+
+      // Initial paint
+      animateCardMetrics();
+      // Periodic jitter
+      setInterval(animateCardMetrics, 4500);
+    })();
+  </script>
+</body>
+</html>
