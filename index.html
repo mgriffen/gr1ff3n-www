@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>gr1ff3n.com | Homelab Control Center</title>
@@ -9,65 +10,96 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=VT323&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet" />
 
   <style>
     :root {
-      /* Core palette (Dracula-ish + cyber stuff) */
-      --bg: #020617;
-      --bg-alt: #0b1020;
-      --bg-elevated: rgba(15, 23, 42, 0.96);
-      --bg-elevated-soft: rgba(15, 23, 42, 0.85);
+      /* Cyberpunk Palette */
+      --bg: #000000;
+      --bg-alt: #050505;
+      --bg-card: rgba(10, 10, 10, 0.6);
 
-      --accent-cyan: #8be9fd;
-      --accent-pink: #ff79c6;
-      --accent-green: #50fa7b;
-      --accent-yellow: #f1fa8c;
-      --accent-purple: #bd93f9;
-      --accent-blue: #7dd3fc;
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff00ff;
+      --neon-green: #0aff00;
+      --neon-yellow: #fcee0a;
+      --neon-purple: #bc13fe;
 
-      --text-main: #e5e7eb;
-      --text-muted: #9ca3af;
-      --border-subtle: rgba(148, 163, 184, 0.4);
+      --text-main: #e0f2fe;
+      --text-muted: #94a3b8;
 
-      --danger: #f97373;
-      --warning: #facc15;
-      --ok: #4ade80;
+      /* HUD Elements */
+      --border-color: rgba(0, 243, 255, 0.3);
+      --border-active: rgba(0, 243, 255, 0.8);
+      --card-radius: 2px;
+      /* Sharp corners for tech feel */
 
-      --card-radius: 1rem;
-      --transition-fast: 180ms ease-out;
-
-      /* Sidebar sizing */
-      --sidebar-w: 288px;
-      --sidebar-w-collapsed: 84px;
+      --font-display: 'VT323', monospace;
+      --font-tech: 'Share Tech Mono', monospace;
+      --font-code: 'JetBrains Mono', monospace;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow-x: hidden;
+    }
 
     body {
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: var(--font-tech);
       color: var(--text-main);
-      background: radial-gradient(circle at top left, #1f2937 0, #020617 45%, #020617 100%);
-      background-attachment: fixed;
+      background-color: #000;
+      /* CRT Scanline Background Image */
+      background-image:
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      background-size: 100% 2px, 3px 100%;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Subtle grid / noise background */
+    /* CRT Flicker & Vignette */
     body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: radial-gradient(circle, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.9) 100%);
+      z-index: 2;
+      background-size: cover;
       pointer-events: none;
-      opacity: 0.16;
-      background-image:
-        linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
-      background-size: 32px 32px;
-      mix-blend-mode: soft-light;
-      z-index: -1;
+    }
+
+    /* Glitch Animation Keyframes */
+    @keyframes glitch {
+      0% {
+        text-shadow: 2px 0 var(--neon-pink), -2px 0 var(--neon-cyan);
+      }
+
+      25% {
+        text-shadow: -2px 0 var(--neon-pink), 2px 0 var(--neon-cyan);
+      }
+
+      50% {
+        text-shadow: 2px 0 var(--neon-cyan), -2px 0 var(--neon-pink);
+      }
+
+      75% {
+        text-shadow: -2px 0 var(--neon-cyan), 2px 0 var(--neon-pink);
+      }
+
+      100% {
+        text-shadow: 2px 0 var(--neon-pink), -2px 0 var(--neon-cyan);
+      }
     }
 
     /* ===== App shell (sidebar + content) ===== */
@@ -110,11 +142,13 @@
     }
 
     .sidebar-title {
-      font-weight: 700;
-      letter-spacing: 0.06em;
+      font-weight: 400;
+      font-family: var(--font-display);
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--accent-cyan);
-      font-size: 0.95rem;
+      color: var(--neon-cyan);
+      font-size: 1.4rem;
+      text-shadow: 0 0 5px var(--neon-cyan);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -131,14 +165,15 @@
     }
 
     .sidebar-toggle {
-      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-family: var(--font-code);
       font-size: 0.85rem;
       color: var(--text-main);
       background: rgba(15, 23, 42, 0.7);
       border: 1px solid rgba(148, 163, 184, 0.25);
       border-radius: 0.75rem;
       padding: 0.45rem 0.6rem;
-      cursor: not-allowed; /* inactive framework */
+      cursor: not-allowed;
+      /* inactive framework */
       opacity: 0.75;
     }
 
@@ -147,7 +182,9 @@
       overflow: auto;
     }
 
-    .nav-group { margin-bottom: 0.9rem; }
+    .nav-group {
+      margin-bottom: 0.9rem;
+    }
 
     .nav-label {
       padding: 0.6rem 0.7rem 0.4rem;
@@ -170,7 +207,8 @@
       text-decoration: none;
       font-size: 0.9rem;
       text-align: left;
-      cursor: not-allowed; /* inactive */
+      cursor: not-allowed;
+      /* inactive */
       user-select: none;
     }
 
@@ -193,7 +231,7 @@
       place-items: center;
       border: 1px solid rgba(148, 163, 184, 0.25);
       background: rgba(15, 23, 42, 0.72);
-      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-family: var(--font-code);
       font-size: 0.75rem;
       color: var(--text-muted);
       flex: 0 0 auto;
@@ -209,10 +247,25 @@
       margin-left: auto;
     }
 
-    .nav-dot.ok { background: var(--accent-green); box-shadow: 0 0 10px rgba(74, 222, 128, 0.55); }
-    .nav-dot.warn { background: var(--warning); box-shadow: 0 0 10px rgba(250, 204, 21, 0.55); }
-    .nav-dot.bad { background: var(--danger); box-shadow: 0 0 10px rgba(248, 113, 113, 0.55); }
-    .nav-dot.info { background: var(--accent-blue); box-shadow: 0 0 10px rgba(125, 211, 252, 0.55); }
+    .nav-dot.ok {
+      background: var(--neon-green);
+      box-shadow: 0 0 8px var(--neon-green);
+    }
+
+    .nav-dot.warn {
+      background: var(--neon-yellow);
+      box-shadow: 0 0 8px var(--neon-yellow);
+    }
+
+    .nav-dot.bad {
+      background: var(--neon-pink);
+      box-shadow: 0 0 8px var(--neon-pink);
+    }
+
+    .nav-dot.info {
+      background: var(--neon-cyan);
+      box-shadow: 0 0 8px var(--neon-cyan);
+    }
 
     .nav-text {
       min-width: 0;
@@ -230,7 +283,7 @@
     }
 
     .nav-sub {
-      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-family: var(--font-code);
       font-size: 0.72rem;
       color: var(--text-muted);
       white-space: nowrap;
@@ -270,27 +323,28 @@
       align-items: center;
       justify-content: space-between;
       padding: 0.9rem 1.5rem;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
-      background: linear-gradient(
-        to right,
-        rgba(15, 23, 42, 0.92),
-        rgba(15, 23, 42, 0.96),
-        rgba(24, 24, 37, 0.98)
-      );
-      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(5, 5, 5, 0.85);
+      backdrop-filter: blur(4px);
       position: sticky;
       top: 0;
       z-index: 10;
     }
 
-    .top-bar-left { display: flex; align-items: baseline; gap: 0.75rem; }
+    .top-bar-left {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
 
     .site-title {
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1.5rem;
+      font-weight: 400;
+      font-family: var(--font-display);
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      color: var(--accent-cyan);
+      color: var(--neon-green);
+      text-shadow: 0 0 8px var(--neon-green);
     }
 
     .site-subtitle {
@@ -312,11 +366,11 @@
     .status-chip {
       border-radius: 999px;
       padding: 0.25rem 0.75rem;
-      border: 1px solid rgba(148, 163, 184, 0.6);
+      border: 1px solid var(--border-color);
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(0, 20, 20, 0.6);
     }
 
     .status-dot {
@@ -327,8 +381,13 @@
       box-shadow: 0 0 8px rgba(74, 222, 128, 0.8);
     }
 
-    .metric-label { color: var(--text-muted); }
-    .metric-value { color: var(--accent-blue); }
+    .metric-label {
+      color: var(--text-muted);
+    }
+
+    .metric-value {
+      color: var(--accent-blue);
+    }
 
     .top-bar-right {
       display: flex;
@@ -341,12 +400,19 @@
     .mode-pill {
       border-radius: 999px;
       padding: 0.2rem 0.7rem;
-      border: 1px solid rgba(244, 114, 182, 0.9);
-      color: var(--accent-pink);
-      background: radial-gradient(circle at top left, rgba(244, 114, 182, 0.22), transparent 60%);
+      border-radius: 999px;
+      padding: 0.2rem 0.7rem;
+      border: 1px solid var(--neon-pink);
+      color: var(--neon-pink);
+      text-shadow: 0 0 5px var(--neon-pink);
+      background: rgba(20, 0, 20, 0.3);
     }
 
-    .user-pill { display: inline-flex; align-items: center; gap: 0.6rem; }
+    .user-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
 
     .user-avatar {
       width: 26px;
@@ -358,7 +424,9 @@
         0 0 24px rgba(244, 114, 182, 0.45);
     }
 
-    .user-name { color: var(--text-main); }
+    .user-name {
+      color: var(--text-main);
+    }
 
     .main {
       flex: 1;
@@ -372,23 +440,37 @@
     }
 
     .terminal-panel {
-      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.3), transparent 55%),
-                  linear-gradient(to bottom right, #020617, #020617 40%, #020617 100%);
-      border-radius: 0.9rem;
-      border: 1px solid rgba(148, 163, 184, 0.45);
+      font-family: var(--font-code);
+      background: #000;
+      border-radius: 4px;
+      border: 1px solid #333;
       padding: 0.7rem 0.9rem 0.85rem;
-      box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.7),
-        0 0 0 1px rgba(15, 23, 42, 0.7);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.05);
       position: relative;
       overflow: hidden;
     }
 
-    .terminal-header { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.45rem; }
-    .term-dot { width: 10px; height: 10px; border-radius: 999px; background: #f97373; }
-    .term-dot:nth-child(2) { background: #facc15; }
-    .term-dot:nth-child(3) { background: #4ade80; }
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .term-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #f97373;
+    }
+
+    .term-dot:nth-child(2) {
+      background: #facc15;
+    }
+
+    .term-dot:nth-child(3) {
+      background: #4ade80;
+    }
 
     .terminal-body {
       font-size: 0.8rem;
@@ -398,15 +480,43 @@
       padding-bottom: 0.1rem;
     }
 
-    .prompt-line { display: flex; align-items: baseline; gap: 0.4rem; }
-    .segment-username { color: var(--accent-green); }
-    .segment-at { color: var(--text-muted); }
-    .segment-host { color: var(--accent-cyan); }
-    .segment-path { color: var(--accent-purple); }
-    .segment-git { color: var(--accent-pink); }
-    .segment-symbol { color: var(--accent-yellow); }
-    .segment-info { color: var(--text-muted); }
-    .segment-ok { color: var(--accent-green); }
+    .prompt-line {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+    }
+
+    .segment-username {
+      color: var(--accent-green);
+    }
+
+    .segment-at {
+      color: var(--text-muted);
+    }
+
+    .segment-host {
+      color: var(--accent-cyan);
+    }
+
+    .segment-path {
+      color: var(--accent-purple);
+    }
+
+    .segment-git {
+      color: var(--accent-pink);
+    }
+
+    .segment-symbol {
+      color: var(--accent-yellow);
+    }
+
+    .segment-info {
+      color: var(--text-muted);
+    }
+
+    .segment-ok {
+      color: var(--accent-green);
+    }
 
     .dashboard-header {
       display: flex;
@@ -424,7 +534,10 @@
       color: var(--text-muted);
     }
 
-    .dashboard-subtitle { font-size: 0.8rem; color: var(--text-muted); }
+    .dashboard-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
 
     .dashboard-grid {
       display: grid;
@@ -434,14 +547,28 @@
     }
 
     @media (max-width: 1024px) {
-      .dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 720px) {
-      .top-bar { flex-wrap: wrap; gap: 0.5rem; }
-      .top-bar-center { display: none; }
-      .main { padding-inline: 1rem; }
-      .dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+      .top-bar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .top-bar-center {
+        display: none;
+      }
+
+      .main {
+        padding-inline: 1rem;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
 
     .card {
@@ -453,9 +580,12 @@
       border-radius: var(--card-radius);
       text-decoration: none;
       color: inherit;
-      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.20), transparent 55%),
-                  linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
-      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(10, 15, 20, 0.65);
+      border: 1px solid var(--border-color);
+      /* HUD Corner Effect using mask or clip-path is nice, but border-image is simpler for this scope */
+      border-left: 2px solid var(--neon-cyan);
+      /* Accent border */
+      backdrop-filter: blur(4px);
       box-shadow:
         0 18px 35px rgba(0, 0, 0, 0.7),
         0 0 0 1px rgba(15, 23, 42, 0.9);
@@ -465,25 +595,35 @@
 
 
 
-    .card:hover, .card:focus-visible {
-      transform: translateY(-4px);
-      border-color: rgba(56, 189, 248, 0.95);
-      box-shadow:
-        0 24px 55px rgba(8, 47, 73, 0.7),
-        0 0 24px rgba(59, 130, 246, 0.7);
+    .card:hover,
+    .card:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--neon-pink);
+      border-left-color: var(--neon-pink);
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
       outline: none;
-      background: radial-gradient(circle at top left, rgba(244, 114, 182, 0.24), transparent 60%),
-                  linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(17, 24, 39, 0.98));
+      background: rgba(20, 10, 20, 0.7);
     }
 
-    .card-header { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; margin-bottom: 0.35rem; }
+    .card:hover .card-title {
+      animation: glitch 0.4s cubic-bezier(.25, .46, .45, .94) both infinite;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.7rem;
+      margin-bottom: 0.35rem;
+    }
 
     .card-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: lowercase;
-      color: var(--accent-cyan);
+      font-size: 1.1rem;
+      font-weight: 400;
+      font-family: var(--font-display);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--neon-cyan);
     }
 
     .status-pill {
@@ -508,14 +648,43 @@
       box-shadow: 0 0 10px rgba(74, 222, 128, 0.9);
     }
 
-    .status-running { color: var(--accent-green); border-color: rgba(74, 222, 128, 0.9); background: rgba(22, 163, 74, 0.16); }
-    .status-online  { color: var(--accent-blue); border-color: rgba(56, 189, 248, 0.85); background: rgba(8, 47, 73, 0.55); }
-    .status-secure  { color: var(--accent-purple); border-color: rgba(147, 51, 234, 0.9); background: rgba(88, 28, 135, 0.4); }
-    .status-maint   { color: var(--accent-yellow); border-color: rgba(250, 204, 21, 0.9); background: rgba(133, 77, 14, 0.4); }
+    .status-running {
+      color: var(--accent-green);
+      border-color: rgba(74, 222, 128, 0.9);
+      background: rgba(22, 163, 74, 0.16);
+    }
 
-    .card-body { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.6rem; max-width: 40ch; }
+    .status-online {
+      color: var(--accent-blue);
+      border-color: rgba(56, 189, 248, 0.85);
+      background: rgba(8, 47, 73, 0.55);
+    }
 
-    .card-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.55rem; }
+    .status-secure {
+      color: var(--accent-purple);
+      border-color: rgba(147, 51, 234, 0.9);
+      background: rgba(88, 28, 135, 0.4);
+    }
+
+    .status-maint {
+      color: var(--accent-yellow);
+      border-color: rgba(250, 204, 21, 0.9);
+      background: rgba(133, 77, 14, 0.4);
+    }
+
+    .card-body {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+      max-width: 40ch;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 0.55rem;
+    }
 
     .card-tag {
       font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -533,36 +702,101 @@
       gap: 0.9rem;
       font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size: 0.7rem;
-      border-top: 1px dashed rgba(75, 85, 99, 0.9);
+      border-top: 1px dashed var(--border-color);
       padding-top: 0.5rem;
     }
 
-    .metric-group { display: flex; gap: 0.8rem; flex-wrap: wrap; }
-    .metric { display: flex; flex-direction: column; gap: 0.1rem; }
-    .metric-key { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.62rem; color: var(--text-muted); }
+    .card-footer::before {
+      content: "STATUS_CHECK_";
+      position: absolute;
+      bottom: 0.8rem;
+      right: 0.8rem;
+      font-size: 0.5rem;
+      color: var(--border-color);
+      opacity: 0.5;
+    }
 
-    .metric-val { color: var(--accent-blue); }
-    .metric-val[data-kind="status-ok"] { color: var(--accent-green); }
-    .metric-val[data-kind="status-warn"] { color: var(--warning); }
-    .metric-val[data-kind="status-err"] { color: var(--danger); }
+    .metric-group {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
 
-    .metric-secondary { text-align: right; color: var(--text-muted); }
-    .metric-secondary span { color: var(--accent-purple); }
+    .metric {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .metric-key {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.62rem;
+      color: var(--text-muted);
+    }
+
+    .metric-val {
+      color: var(--neon-cyan);
+    }
+
+    .metric-val[data-kind="status-ok"] {
+      color: var(--neon-green);
+      text-shadow: 0 0 5px var(--neon-green);
+    }
+
+    .metric-val[data-kind="status-warn"] {
+      color: var(--neon-yellow);
+      text-shadow: 0 0 5px var(--neon-yellow);
+    }
+
+    .metric-val[data-kind="status-err"] {
+      color: var(--neon-pink);
+      text-shadow: 0 0 5px var(--neon-pink);
+    }
+
+    .metric-secondary {
+      text-align: right;
+      color: var(--text-muted);
+    }
+
+    .metric-secondary span {
+      color: var(--accent-purple);
+    }
 
     footer {
       padding: 1rem 1.5rem 1.3rem;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
+      font-family: var(--font-display);
       color: var(--text-muted);
       display: flex;
       justify-content: center;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
     }
 
-    footer span { opacity: 0.8; }
+    footer span::before {
+      content: "[ ";
+      color: var(--border-color);
+    }
+
+    footer span::after {
+      content: " ]";
+      color: var(--border-color);
+    }
+
+    footer span {
+      opacity: 0.8;
+    }
 
     /* Responsive: hide sidebar on small screens */
-    @media (max-width: 980px) { .sidebar { display: none; } }
+    @media (max-width: 980px) {
+      .sidebar {
+        display: none;
+      }
+    }
   </style>
 </head>
+
 <body>
 
   <div class="app-shell">
@@ -701,35 +935,35 @@
       <div class="page">
         <header class="top-bar">
           <div class="top-bar-left">
-            <div class="site-title">gr1ff3n.com</div>
-            <div class="site-subtitle">Homelab Control Center</div>
+            <div class="site-title">gr1ff3n.com // MAINFRAME</div>
+            <div class="site-subtitle">ACCESS LEVEL: UNRESTRICTED</div>
           </div>
 
           <div class="top-bar-center">
             <div class="status-chip">
               <span class="status-dot"></span>
-              <span class="metric-label">Cluster</span>
-              <span class="metric-value">healthy</span>
+              <span class="metric-label">System</span>
+              <span class="metric-value">Online</span>
             </div>
             <div class="status-chip">
               <span class="metric-label">Uptime</span>
-              <span class="metric-value" id="cluster-uptime">24d 06h</span>
+              <span class="metric-value" id="cluster-uptime">99.9%</span>
             </div>
             <div class="status-chip">
-              <span class="metric-label">Nodes</span>
-              <span class="metric-value" id="cluster-nodes">3</span>
+              <span class="metric-label">Caffeine</span>
+              <span class="metric-value" id="cluster-nodes">404</span>
             </div>
             <div class="status-chip">
-              <span class="metric-label">Services</span>
-              <span class="metric-value" id="cluster-services">9</span>
+              <span class="metric-label">Motivation</span>
+              <span class="metric-value" id="cluster-services">12%</span>
             </div>
           </div>
 
           <div class="top-bar-right">
-            <div class="mode-pill">MODE: OPERATOR</div>
+            <div class="mode-pill">MODE: NETRUNNER</div>
             <div class="user-pill">
               <div class="user-avatar"></div>
-              <div class="user-name">griff@homelab</div>
+              <div class="user-name">root@gr1ff3n</div>
             </div>
           </div>
         </header>
@@ -744,22 +978,23 @@
             </div>
             <div class="terminal-body">
               <div class="prompt-line">
-                <span class="segment-username">griff</span>
+                <span class="segment-username">root</span>
                 <span class="segment-at">@</span>
-                <span class="segment-host">homelab</span>
-                <span class="segment-path">~/gr1ff3n.com</span>
-                <span class="segment-git">git:(main)</span>
-                <span class="segment-symbol">⛵</span>
-                <span class="segment-info">containers:&nbsp;<span id="terminal-containers">9</span>&nbsp;|&nbsp;status:&nbsp;</span>
-                <span class="segment-ok">all green&nbsp;✔</span>
+                <span class="segment-host">mainframe</span>
+                <span class="segment-path">~/systems/core</span>
+                <span class="segment-git">git:(master)</span>
+                <span class="segment-symbol">⚡</span>
+                <span class="segment-info">security:&nbsp;<span
+                    id="terminal-containers">bypassed</span>&nbsp;|&nbsp;trace:&nbsp;</span>
+                <span class="segment-ok">active&nbsp;⚠</span>
               </div>
             </div>
           </section>
 
           <!-- Dashboard header -->
           <section class="dashboard-header">
-            <div class="dashboard-title">Container Dashboard</div>
-            <div class="dashboard-subtitle">Click any running container to jump into that part of the stack.</div>
+            <div class="dashboard-title">Active Subsystems</div>
+            <div class="dashboard-subtitle">Select a target to initiate connection protocol...</div>
           </section>
 
           <!-- Dashboard grid -->
@@ -1188,4 +1423,5 @@
     })();
   </script>
 </body>
+
 </html>
