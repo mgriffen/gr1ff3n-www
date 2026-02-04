@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SECTOR: HOMELAB // SYSTEM LOCK</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000000;
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff00ff;
+      --neon-green: #0aff00;
+      --font-display: 'VT323', monospace;
+      --font-tech: 'Share Tech Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      height: 100vh;
+      background-color: var(--bg);
+      font-family: var(--font-tech);
+      color: var(--neon-cyan);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      /* CRT lines */
+      background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      background-size: 100% 2px, 3px 100%;
+    }
+
+    /* Vignette & Flicker */
+    body::after {
+      content: " ";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.8) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .container {
+      text-align: center;
+      z-index: 3;
+      border: 1px solid var(--neon-pink);
+      padding: 2rem 3rem;
+      background: rgba(10, 5, 10, 0.8);
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      color: var(--neon-pink);
+      text-shadow: 0 0 10px var(--neon-pink);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    p {
+      color: var(--neon-green);
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      text-decoration: none;
+      font-family: var(--font-tech);
+      text-transform: uppercase;
+      transition: all 0.2s;
+      background: rgba(0, 20, 20, 0.6);
+    }
+
+    .btn:hover {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: 0 0 15px var(--neon-cyan);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SECTOR: HOMELAB</h1>
+    <p>// UNDER CONSTRUCTION // SYSTEM LOCK ENGAGED</p>
+    <a href="/" class="btn">&lt; cd .. (Return to Mainframe)</a>
+  </div>
+</body>
+</html>
