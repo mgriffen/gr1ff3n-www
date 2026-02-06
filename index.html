@@ -444,7 +444,7 @@
       background: #000;
       border-radius: 4px;
       border: 1px solid #333;
-      padding: 0.7rem 0.9rem 0.85rem;
+      padding: 0.5rem 0.75rem;
       box-shadow: 0 0 15px rgba(0, 255, 0, 0.05);
       position: relative;
       overflow: hidden;
@@ -479,7 +479,7 @@
       /* allow wrap for history */
       white-space: pre-wrap;
       padding-bottom: 0.1rem;
-      max-height: 200px;
+      max-height: 100px;
       overflow-y: auto;
     }
 
@@ -1004,28 +1004,7 @@
         </header>
 
         <main class="main">
-          <!-- Terminal-style panel -->
-          <section class="terminal-panel" aria-label="Powerlevel10k-style status">
-            <div class="terminal-header">
-              <div class="term-dot"></div>
-              <div class="term-dot"></div>
-              <div class="term-dot"></div>
-            </div>
-            <div class="terminal-body" id="terminal-body" onclick="document.getElementById('cli-input').focus()">
-              <div id="terminal-history">
-                <div class="term-output-line">Welcome to Gr1ff3nOS v2.4. Type <span
-                    style="color:var(--neon-yellow)">'help'</span> for existing commands.</div>
-              </div>
-              <div class="prompt-line">
-                <span class="segment-username">root</span>
-                <span class="segment-at">@</span>
-                <span class="segment-host">mainframe</span>
-                <span class="segment-path">~</span>
-                <span class="segment-symbol">⚡</span>
-                <input type="text" id="cli-input" class="term-input" autocomplete="off" spellcheck="false">
-              </div>
-            </div>
-          </section>
+
 
           <!-- Dashboard header -->
           <section class="dashboard-header">
@@ -1351,6 +1330,25 @@
               </div>
             </a>
 
+          </section>
+          <!-- Terminal-style panel -->
+          <section class="terminal-panel" aria-label="Powerlevel10k-style status" style="margin-top: 2rem;">
+            <div class="terminal-header">
+              <div class="term-dot"></div>
+              <div class="term-dot"></div>
+              <div class="term-dot"></div>
+            </div>
+            <div class="terminal-body" id="terminal-body" onclick="document.getElementById('cli-input').focus()">
+              <div id="terminal-history"></div>
+              <div class="prompt-line">
+                <span class="segment-username">root</span>
+                <span class="segment-at">@</span>
+                <span class="segment-host">mainframe</span>
+                <span class="segment-path">~</span>
+                <span class="segment-symbol">⚡</span>
+                <input type="text" id="cli-input" class="term-input" autocomplete="off" spellcheck="false">
+              </div>
+            </div>
           </section>
         </main>
 
